@@ -204,9 +204,23 @@ class TestHyperparameters(unittest.TestCase):
         self.assertEqual(
             "param, Type: NormalFloat, Mu: 0.5 Sigma: 10.5, Default: 0.5",
             str(f1))
-        self.assertEqual(f1.get_neighbors(0.5, rs=np.random.RandomState(42)),
-                         [5.715498606617943, -0.9517751622974389, 7.300729650057271,
-                          16.491813492284265])
+
+        # Due to seemingly different numbers with x86_64 and i686 architectures
+        # we got these numbers, where last two are slightly different
+        # [
+        #   5.715498606617943, -0.9517751622974389,
+        #   7.3007296500572725, 16.49181349228427
+        # ]
+        # They are equal up to 14 decimal places
+        expected = [
+            5.715498606617943, -0.9517751622974389,
+            7.300729650057271, 16.491813492284265
+        ]
+        np.testing.assert_almost_equal(
+            f1.get_neighbors(0.5, rs=np.random.RandomState(42)),
+            expected,
+            decimal=14
+         )
 
         # Test attributes are accessible
         self.assertEqual(f1.name, "param")
@@ -280,8 +294,17 @@ class TestHyperparameters(unittest.TestCase):
         self.assertEqual(
             "param, Type: NormalFloat, Mu: 5.0 Sigma: 10.0, Range: [0.1, 10.0], " +
             "Default: 5.0, on log-scale, Q: 0.1", str(f6))
-        self.assertEqual(f6.get_neighbors(5, rs=np.random.RandomState(42)),
-                         [9.967141530112327, 3.6173569882881536, 10.0, 10.0])
+
+        # Due to seemingly different numbers with x86_64 and i686 architectures
+        # we got these numbers, where the first one is slightly different
+        # [9.967141530112325, 3.6173569882881536, 10.0, 10.0]
+        # They are equal up to 14 decimal places
+        expected = [9.967141530112327, 3.6173569882881536, 10.0, 10.0]
+        np.testing.assert_almost_equal(
+            f6.get_neighbors(5, rs=np.random.RandomState(42)),
+            expected,
+            decimal=14
+        )
 
         self.assertNotEqual(f1, f2)
         self.assertNotEqual(f1, "UniformFloat")
