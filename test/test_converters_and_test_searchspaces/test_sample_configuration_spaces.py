@@ -31,6 +31,7 @@ import unittest
 
 import ConfigSpace
 import ConfigSpace.util
+import ConfigSpace.read_and_write.json as json_parser
 import ConfigSpace.read_and_write.pcs as pcs_parser
 import ConfigSpace.read_and_write.pcs_new as pcs_new_parser
 
@@ -41,12 +42,15 @@ class ExampleSearchSpacesTest(unittest.TestCase):
 
 def generate(configuration_space_path):
     def run_test(self):
-        try:
-            with open(configuration_space_path) as fh:
-                cs = pcs_parser.read(fh)
-        except Exception:
-            with open(configuration_space_path) as fh:
-                cs = pcs_new_parser.read(fh)
+        with open(configuration_space_path) as fh:
+            if os.path.splitext(fh.name)[1] == '.json':
+                cs = json_parser.read(fh.read())
+            else:
+                try:
+                    cs = pcs_parser.read(fh)
+                except Exception:
+                    fh.seek(0)
+                    cs = pcs_new_parser.read(fh)
 
         visited = set()
         for hp in cs.get_hyperparameters():
@@ -103,7 +107,7 @@ configuration_space_path = os.path.abspath(configuration_space_path)
 pcs_files = sorted(os.listdir(configuration_space_path))
 
 for pcs_file in pcs_files:
-    if '.pcs' in pcs_file:
+    if '.pcs' in pcs_file or '.json' in pcs_file:
         full_path = os.path.join(configuration_space_path, pcs_file)
         setattr(ExampleSearchSpacesTest, 'test_%s' % pcs_file.replace('.', '_'),
                 generate(full_path))
