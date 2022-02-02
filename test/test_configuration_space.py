@@ -339,6 +339,13 @@ class TestConfigurationSpace(unittest.TestCase):
         for hp in hyperparameters:
             cs.add_hyperparameter(hp)
 
+        hps = cs.get_hyperparameters()
+        # AND is moved to the front because of alphabetical sorting
+        for hp, idx in zip(hyperparameters, [1, 2, 3, 4, 5, 0, 6]):
+            self.assertEqual(hps.index(hp), idx)
+            self.assertEqual(cs._hyperparameter_idx[hp.name], idx)
+            self.assertEqual(cs._idx_to_hyperparameter[idx], hp.name)
+
         cond1 = EqualsCondition(hp6, hp1, 1)
         cond2 = NotEqualsCondition(hp6, hp2, 1)
         cond3 = InCondition(hp6, hp3, [1])
@@ -353,7 +360,6 @@ class TestConfigurationSpace(unittest.TestCase):
 
         cs.add_condition(cond4)
         hps = cs.get_hyperparameters()
-        # AND is moved to the front because of alphabetical sorting
         for hp, idx in zip(hyperparameters, [1, 2, 3, 4, 6, 0, 5]):
             self.assertEqual(hps.index(hp), idx)
             self.assertEqual(cs._hyperparameter_idx[hp.name], idx)
