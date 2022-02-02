@@ -332,7 +332,7 @@ def deactivate_inactive_hyperparameters(
         hyperparameters by iterating through the conditions of the
         configuration space.
     vector : (np.ndarray, optional)
-        Efficient represantation of a configuration. Either ``configuration`` or
+        Efficient representation of a configuration. Either ``configuration`` or
         ``vector`` must be specified. If both are specified only
         ``configuration`` will be used.
 
